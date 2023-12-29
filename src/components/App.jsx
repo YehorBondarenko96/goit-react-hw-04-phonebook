@@ -6,18 +6,12 @@ import { nanoid } from "nanoid";
 import { useState, useEffect } from "react";
 
 export const App = () => {
+
+  const contactsLS = localStorage.getItem('contacts');
+  const valueContacts = contactsLS ? JSON.parse(contactsLS) : [];
   
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState(valueContacts);
   const [filter, setFilter] = useState('');
-
-  useEffect(() => {
-    const contactsLS = localStorage.getItem('contacts');
-
-    if(contactsLS){
-      const contacts = JSON.parse(contactsLS);
-      setContacts(contacts)
-    }
-  }, []);
 
   const updateStateForAdd = (evt) => {
     evt.preventDefault();
@@ -33,7 +27,7 @@ export const App = () => {
   };
 
   useEffect(() => {
-          localStorage.setItem('contacts', JSON.stringify(contacts));
+    localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
   
 
@@ -46,19 +40,16 @@ export const App = () => {
   const updateStateForFilter = (evt) => {
     evt.preventDefault();
     const filterValue = evt.target.value;
-    setFilter(filterValue)
+    setFilter(filterValue);
   };
 
-  
-
-    const filterWithState = filter;
-
-    
-    // if(filter.length > 0){
-    //   contacts = contacts.filter(
-    //       (contact) => (contact.name.toLowerCase().includes(filter.toLowerCase()))
-    //       )
-    // }
+  const workFilters = () => {
+      if(filter.length > 0) {
+       return contacts.filter((contact) => contact.name.toLowerCase().includes(filter.toLowerCase()))
+      } else {
+        return contacts
+      }
+  };
 
   return (
     <div
@@ -78,11 +69,11 @@ export const App = () => {
 
   <h2 className={css.contacts}>Contacts</h2>
   <Filter
-  filterWithState={filterWithState}
+  filterWithState={filter}
   updateStateForFilter={updateStateForFilter}
   />
   <ContactList 
-  contacts={contacts}
+  contacts={workFilters()}
   updateStateForDelete={updateStateForDelete}
   />
 </div>
